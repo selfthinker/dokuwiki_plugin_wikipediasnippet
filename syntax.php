@@ -32,14 +32,14 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         if($mode == 'xhtml') {
             if ($data) {
                 global $conf;
-                $wp_url = 'http://'.$conf['lang'].'.wikipedia.org/';
+                $wpUrl = 'http://'.$conf['lang'].'.wikipedia.org/';
 
-                $wpContent = $this->_getWPcontent($data, $wp_url);
+                $wpContent = $this->_getWPcontent($data, $wpUrl);
                 if ($wpContent) {
                     $renderer->doc .= $wpContent;
                 } else {
                     // if all fails, build interwiki link
-                    $renderer->doc .= '<a href="'.$wp_url.'wiki/'.hsc($data).'" class="interwiki iw_wp">'.hsc($data).'</a>';
+                    $renderer->doc .= '<a href="'.$wpUrl.'wiki/'.hsc($data).'" class="interwiki iw_wp">'.hsc($data).'</a>';
                 }
             }
             // if no parameter was given, just don't display anything
@@ -50,46 +50,68 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
      * Get the content of the article from Wikipedia, create a useful snippet
      *   and create its container
      */
-    function _getWPcontent($article, $wp_url) {
-        $url = $wp_url.'w/api.php?action=parse&redirects=1&prop=text|displaytitle|revid&format=xml&page='.$article;
+    function _getWPcontent($article, $wpUrl) {
+        $url = $wpUrl.'w/api.php?action=parse&redirects=1&prop=text|displaytitle|revid&format=xml&page='.$article;
         $xml = simplexml_load_file($url, 'SimpleXMLElement');
 
         if (!$xml) return false;
         $title = $xml->parse['displaytitle'];
         $revision = $xml->parse['revid'];
         $text = $xml->parse->text;
-
         if (!$text) return false;
-        // get the first paragraphs by deleting everything after the TOC or the first headline
-        $tocPos = strpos($text, '<table id="toc"');
-        $h2Pos = strpos($text, '<h2');
-        if ($tocPos) $text = substr($text, 0 , $tocPos);
-        else if ($h2Pos) $text = substr($text, 0 , $h2Pos);
-        // all relative links should point to wikipedia
-        $text = str_replace('href="/', 'href="'.$wp_url , $text);
-        // cache all external images
-        // TODO: fetch & cache img -> ml(imgURL)
 
-        // TODO: remove tables
-        if (!$this->getConf('includeTables')) {
+        // all relative links should point to wikipedia
+        $text = str_replace('href="/', 'href="'.$wpUrl , $text);
+
+        require_once('simplehtmldom/simple_html_dom.php');
+        $html = new simple_html_dom();
+        $html->load($text);
+
+        // get only the first paragraphs by deleting everything after the TOC and/or the first headline
+        $htmlFromToc = $html->find('#toc',0);
+        while($htmlFromToc->nextSibling()) {
+            $htmlFromToc->outertext = "";
+            $htmlFromToc = $htmlFromToc->nextSibling();
         }
-        // TODO: remove images
-        if (!$this->getConf('includeImages')) {
+        $htmlFromH2 = $html->find('h2',0);
+        if ($htmlFromH2->parentNode()->id == 'toctitle') {
+            $htmlFromH2 = $html->find('h2',1);
         }
+        while($htmlFromH2->nextSibling()) {
+            $htmlFromH2->outertext = "";
+            $htmlFromH2 = $htmlFromH2->nextSibling();
+        }
+
+        // cache all external images
+        $images = $html->find('img');
+        foreach ($images as $img) {
+            $imgSrc = $img->src;
+            $img->src = ml($imgSrc);
+        }
+
+        // remove all undesired elements
+        $remTables = (!$this->getConf('includeTables')) ? ', table' : '';
+        $remImages = (!$this->getConf('includeImages')) ? ', a.image' : '';
+        $remove = $html->find('script, .noprint, .editsection'.$remTables.$remImages);
+        foreach ($remove as $rem) {
+            $rem->outertext = "";
+        }
+
+        $text = $html;
 
         $article = hsc($article);
-        $permalink = $wp_url.'w/index.php?title='.$article.'&amp;oldid='.$revision;
-        $normallink = $wp_url.'wiki/'.$article;
+        $permalink = $wpUrl.'w/index.php?title='.$article.'&amp;oldid='.$revision;
+        $normallink = $wpUrl.'wiki/'.$article;
 
         // display snippet and container
-        $wpContent  = '<dl class="wpsnip">';
-        $wpContent .= '  <dt>';
-        $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wp_url).'</em>';
-        $wpContent .= '      <a href="'.$normallink.'" class="interwiki iw_wp">'.$title.'</a>';
-        $wpContent .= '      <sup><a href="'.$permalink.'" class="perm">'.$this->getLang('permalink').'</a></sup>';
-        $wpContent .= '  </dt>';
-        $wpContent .= '  <dd>'.$text.'<div class="wplicense">'.$this->_getWPlicense($wp_url).'</div></dd>';
-        $wpContent .= '</dl>';
+        $wpContent  = '<dl class="wpsnip">'.NL;
+        $wpContent .= '  <dt>'.NL;
+        $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wpUrl).'</em>';
+        $wpContent .=        '<cite><a href="'.$normallink.'" class="interwiki iw_wp">'.$title.'</a></cite> ';
+        $wpContent .=        '<sup><a href="'.$permalink.'" class="perm">'.$this->getLang('permalink').'</a></sup>'.NL;
+        $wpContent .= '  </dt>'.NL;
+        $wpContent .= '  <dd><blockquote>'.$text.NL.'</blockquote><div class="wplicense">'.$this->_getWPlicense($wpUrl).'</div></dd>'.NL;
+        $wpContent .= '</dl>'.NL;
 
         return $wpContent;
     }
@@ -97,8 +119,8 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
     /**
      * Get license under which the content is distributed
      */
-    function _getWPlicense($wp_url) {
-        $url = $wp_url.'w/api.php?action=query&meta=siteinfo&siprop=rightsinfo&format=xml';
+    function _getWPlicense($wpUrl) {
+        $url = $wpUrl.'w/api.php?action=query&meta=siteinfo&siprop=rightsinfo&format=xml';
         $xml = simplexml_load_file($url, 'SimpleXMLElement');
 
         if (!$xml) return false;

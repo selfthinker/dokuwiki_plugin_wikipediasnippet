@@ -3,5 +3,5 @@
  * Default settings for the WikipediaSnippet plugin
  */
 
-$conf['includeTables']    = 1;
-$conf['includeImages']    = 1;
+$conf['includeTables']    = 0;
+$conf['includeImages']    = 0;

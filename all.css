@@ -1,0 +1,46 @@
+
+dl.wpsnip {
+    zoom: 1;
+    margin-bottom: 1.5em;
+}
+
+/* __________ snippet header __________ */
+
+dl.wpsnip dt {
+    padding: .2em .3em;
+    font-weight: bold;
+}
+dl.wpsnip dt cite {
+    font-style: normal;
+}
+/* "snippet from wp" */
+dl.wpsnip dt em {
+    font-weight: normal;
+    float: right;
+}
+
+/* __________ wp content __________ */
+
+dl.wpsnip dd blockquote {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+/* tables */
+dl.wpsnip dd .infobox,
+dl.wpsnip dd .metadata {
+    float: right;
+    margin-left: 10px;
+}
+/* top messages */
+dl.wpsnip dd .dablink {
+    font-style: italic;
+    font-size: 90%;
+    margin-bottom: 1em;
+}
+/* license below the content */
+dl.wpsnip dd .wplicense {
+    clear: both;
+    text-align: right;
+    font-size: 90%;
+}
