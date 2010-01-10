@@ -1,0 +1,64 @@
+
+dl.wpsnip {
+    zoom: 1;
+}
+
+/* __________ snippet header __________ */
+
+dl.wpsnip dt {
+    border: solid __border__;
+    border-width: 1px 1px 3px;
+    padding: .2em .3em;
+    font-size: 120%;
+    font-weight: bold;
+}
+dl.wpsnip dt a {
+}
+/* permalink */
+dl.wpsnip dt a.perm {
+    font-size: 80%;
+    font-weight: normal;
+}
+/* "snippet from wp" */
+dl.wpsnip dt em {
+    font-size: 85%;
+    font-style: normal;
+    font-weight: normal;
+    float: right;
+    line-height: 1.8;
+}
+dl.wpsnip dt em a {
+    font-weight: bold;
+}
+
+/* __________ wp content __________ */
+
+dl.wpsnip dd {
+    background-color: __background_neu__;
+    padding: 1em .5em 0;
+}
+
+/* tables */
+dl.wpsnip dd .infobox,
+dl.wpsnip dd .metadata {
+    float: right;
+    border: 1px solid __border__;
+    margin-left: 10px;
+}
+/* top messages */
+dl.wpsnip dd .dablink {
+    font-style: italic;
+    font-size: 90%;
+    margin-bottom: 1em;
+}
+dl.wpsnip dd .noprint {
+    display: none;
+}
+
+/* license below the content */
+dl.wpsnip dd .wplicense {
+    clear: both;
+    border-top: 1px solid __border__;
+    text-align: right;
+    font-size: 90%;
+}

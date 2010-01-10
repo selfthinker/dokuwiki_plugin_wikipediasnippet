@@ -1,0 +1,18 @@
+
+/* "snippet from wp" */
+dl.wpsnip dt em {
+    float: left;
+}
+
+/* tables */
+dl.wpsnip dd .infobox,
+dl.wpsnip dd .metadata {
+    float: left;
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+/* license below the content */
+dl.wpsnip dd .wplicense {
+    text-align: left;
+}
