@@ -69,15 +69,15 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
 
         // get only the first paragraphs by deleting everything after the TOC and/or the first headline
         $htmlFromToc = $html->find('#toc',0);
-        while($htmlFromToc->nextSibling()) {
+        while($htmlFromToc && $htmlFromToc->nextSibling()) {
             $htmlFromToc->outertext = "";
             $htmlFromToc = $htmlFromToc->nextSibling();
         }
         $htmlFromH2 = $html->find('h2',0);
-        if ($htmlFromH2->parentNode()->id == 'toctitle') {
+        if ($htmlFromH2 && $htmlFromH2->parentNode()->id == 'toctitle') {
             $htmlFromH2 = $html->find('h2',1);
         }
-        while($htmlFromH2->nextSibling()) {
+        while($htmlFromH2 && $htmlFromH2->nextSibling()) {
             $htmlFromH2->outertext = "";
             $htmlFromH2 = $htmlFromH2->nextSibling();
         }
