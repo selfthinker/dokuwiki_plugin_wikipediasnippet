@@ -52,8 +52,15 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
      */
     function _getWPcontent($article, $wpUrl) {
         $url = $wpUrl.'w/api.php?action=parse&redirects=1&prop=text|displaytitle|revid&format=xml&page='.$article;
-        $xml = simplexml_load_file($url, 'SimpleXMLElement');
 
+        // fetch article data from Wikipedia
+        $http = new DokuHTTPClient();
+        $http->agent .= ' (DokuWiki WikipediaSnippet Plugin)';
+        $data = $http->get($url);
+        if(!$data) return false;
+
+        // parse XML
+        $xml = simplexml_load_string($data, 'SimpleXMLElement');
         if (!$xml) return false;
         $title = $xml->parse['displaytitle'];
         $revision = $xml->parse['revid'];
@@ -121,7 +128,13 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
      */
     function _getWPlicense($wpUrl) {
         $url = $wpUrl.'w/api.php?action=query&meta=siteinfo&siprop=rightsinfo&format=xml';
-        $xml = simplexml_load_file($url, 'SimpleXMLElement');
+
+        // fetch license data from Wikipedia
+        $http = new DokuHTTPClient();
+        $http->agent .= ' (DokuWiki WikipediaSnippet Plugin)';
+        $data = $http->get($url);
+        if(!$data) return false;
+        $xml = simplexml_load_string($data, 'SimpleXMLElement');
 
         if (!$xml) return false;
         $url = $xml->query->rightsinfo['url'];
