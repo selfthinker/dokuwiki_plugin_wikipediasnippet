@@ -113,11 +113,11 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         // display snippet and container
         $wpContent  = '<dl class="wpsnip">'.NL;
         $wpContent .= '  <dt>'.NL;
-        $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wpUrl).'</em>';
-        $wpContent .=        '<cite><a href="'.$normallink.'" class="interwiki iw_wp">'.$title.'</a></cite> ';
-        $wpContent .=        '<sup><a href="'.$permalink.'" class="perm">'.$this->getLang('permalink').'</a></sup>'.NL;
+        $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wpUrl).'<span>: </span></em>';
+        $wpContent .=      '<cite><strong><a href="'.$normallink.'" class="interwiki iw_wp">'.$title.'</a></strong></cite> ';
+        $wpContent .=      '<sup><a href="'.$permalink.'" class="perm">'.$this->getLang('permalink').'</a></sup>'.NL;
         $wpContent .= '  </dt>'.NL;
-        $wpContent .= '  <dd><blockquote>'.$text.NL.'</blockquote><div class="wplicense">'.$this->_getWPlicense($wpUrl).'</div></dd>'.NL;
+        $wpContent .= '  <dd><blockquote>'.$text.NL.'</blockquote>'.$this->_getWPlicense($wpUrl).'</dd>'.NL;
         $wpContent .= '</dl>'.NL;
 
         return $wpContent;
@@ -140,7 +140,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $url = $xml->query->rightsinfo['url'];
         $text = $xml->query->rightsinfo['text'];
 
-        return '<a href="'.$url.'">'.$text.'</a>';
+        return '<div class="wplicense"><a href="'.$url.'">'.$text.'</a></div>';
     }
 
 

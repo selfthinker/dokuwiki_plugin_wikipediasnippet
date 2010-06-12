@@ -2,6 +2,7 @@
 /* __________ snippet header __________ */
 
 dl.wpsnip dt {
+    padding-bottom: .2em;
     border-bottom: 1px solid #000;
 }
 dl.wpsnip dt cite a.interwiki {

@@ -7,7 +7,6 @@ dl.wpsnip {
 /* __________ snippet header __________ */
 
 dl.wpsnip dt {
-    padding: .2em .3em;
     font-weight: bold;
 }
 dl.wpsnip dt cite {
@@ -17,6 +16,11 @@ dl.wpsnip dt cite {
 dl.wpsnip dt em {
     font-weight: normal;
     float: right;
+}
+dl.wpsnip dt em span {
+    position: absolute;
+    left: -50000px;
+    top: -50000px;
 }
 
 /* __________ wp content __________ */

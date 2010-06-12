@@ -5,6 +5,7 @@ dl.wpsnip dt {
     border: solid __border__;
     border-width: 1px 1px 3px;
     font-size: 120%;
+    padding: .2em .3em;
 }
 /* permalink */
 dl.wpsnip dt sup a.perm {
