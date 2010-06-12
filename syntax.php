@@ -99,7 +99,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         // remove all undesired elements
         $remTables = (!$this->getConf('includeTables')) ? ', table' : '';
         $remImages = (!$this->getConf('includeImages')) ? ', a.image' : '';
-        $remove = $html->find('script, .noprint, .editsection'.$remTables.$remImages);
+        $remove = $html->find('script, .noprint, .editsection, .dablink'.$remTables.$remImages);
         foreach ($remove as $rem) {
             $rem->outertext = "";
         }
