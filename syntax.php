@@ -39,7 +39,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
                     $renderer->doc .= $wpContent;
                 } else {
                     // if all fails, build interwiki link
-                    $renderer->doc .= '<a href="'.$wpUrl.'wiki/'.hsc($data).'" class="interwiki iw_wp">'.hsc($data).'</a>';
+                    $renderer->doc .= '<a href="'.$wpUrl.'wiki/'.rawurlencode($data).'" class="interwiki iw_wp">'.hsc($data).'</a>';
                 }
             }
             // if no parameter was given, just don't display anything
@@ -51,7 +51,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
      *   and create its container
      */
     function _getWPcontent($article, $wpUrl) {
-        $url = $wpUrl.'w/api.php?action=parse&redirects=1&prop=text|displaytitle|revid&format=xml&page='.$article;
+        $url = $wpUrl.'w/api.php?action=parse&redirects=1&prop=text|displaytitle|revid&format=xml&page='.rawurlencode($article);
 
         // fetch article data from Wikipedia
         $http = new DokuHTTPClient();
@@ -106,9 +106,8 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
 
         $text = $html;
 
-        $article = hsc($article);
-        $permalink = $wpUrl.'w/index.php?title='.$article.'&amp;oldid='.$revision;
-        $normallink = $wpUrl.'wiki/'.$article;
+        $permalink = $wpUrl.'w/index.php?title='.rawurlencode($article).'&amp;oldid='.$revision;
+        $normallink = $wpUrl.'wiki/'.rawurlencode($article);
 
         // display snippet and container
         $wpContent  = '<dl class="wpsnip">'.NL;
