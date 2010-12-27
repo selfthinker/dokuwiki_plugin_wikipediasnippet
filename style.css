@@ -27,6 +27,7 @@ dl.wpsnip dt em a {
 dl.wpsnip dd {
     background-color: __background_neu__;
     padding: 1em .5em 0;
+    margin: 0;
 }
 /* tables */
 dl.wpsnip dd .infobox,
