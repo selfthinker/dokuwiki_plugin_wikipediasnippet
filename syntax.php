@@ -57,15 +57,35 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $http = new DokuHTTPClient();
         $http->agent .= ' (DokuWiki WikipediaSnippet Plugin)';
         $data = $http->get($url);
-        if(!$data) return false;
+        if(!$data) {
+            msg('Error: Fetching the article from Wikipedia failed.', -1);
+            if ($http->error) {
+                msg($http->error, -1);
+            }
+            return false;
+        }
 
         // parse XML
         $xml = simplexml_load_string($data, 'SimpleXMLElement');
-        if (!$xml) return false;
+        if (!$xml) {
+            msg('Error: Loading the XML failed.', -1);
+            foreach(libxml_get_errors() as $error) {
+                msg($error->message, -1);
+            }
+            libxml_clear_errors();
+            return false;
+        }
         $title = $xml->parse['displaytitle'];
         $revision = $xml->parse['revid'];
         $text = $xml->parse->text;
-        if (!$text) return false;
+        if (!$text) {
+            msg('Error: Parsing the XML failed.', -1);
+            $error = $xml->error;
+            if ($error) {
+                msg($error['code'].': '.$error['info'] ,-1);
+            }
+            return false;
+        }
 
         // all relative links should point to wikipedia
         $text = str_replace('href="/', 'href="'.$wpUrl , $text);
