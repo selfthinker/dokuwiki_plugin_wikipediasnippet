@@ -1,7 +1,0 @@
-<?php
-/**
- * Japanese language file for the WikipediaSnippet plugin
-  */
-
-  $lang['permalink'] = 'パーマリンク';
-  $lang['from']      = '<a href="%s">ウィキペディア</a>からの抜粋';
