@@ -32,7 +32,16 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         if($mode == 'xhtml') {
             if ($data) {
                 global $conf;
-                $wpUrl = 'http://'.$conf['lang'].'.wikipedia.org/';
+                $lang = $conf['lang'];
+
+                // correct some non-standard language codes
+                $langCorrectionsFile = dirname(__FILE__).'/conf/langCorrections.conf';
+                if (@file_exists($langCorrectionsFile)) {
+                    $langCorrections = confToHash($langCorrectionsFile);
+                    $lang = strtr($lang, $langCorrections);
+                }
+
+                $wpUrl = 'http://'.$lang.'.wikipedia.org/';
 
                 $wpContent = $this->_getWPcontent($data, $wpUrl);
                 if ($wpContent) {
