@@ -17,6 +17,9 @@ dl.wpsnip dt em {
     font-weight: normal;
     float: right;
 }
+[dir=rtl] dl.wpsnip dt em {
+    float: left;
+}
 dl.wpsnip dt em span {
     position: absolute;
     left: -50000px;
@@ -36,6 +39,12 @@ dl.wpsnip dd .metadata {
     float: right;
     margin-left: 10px;
 }
+[dir=rtl] dl.wpsnip dd .infobox,
+[dir=rtl] dl.wpsnip dd .metadata {
+    float: left;
+    margin-left: 0;
+    margin-right: 10px;
+}
 /* top messages */
 dl.wpsnip dd .dablink {
     font-style: italic;
@@ -47,4 +56,7 @@ dl.wpsnip dd .wplicense {
     clear: both;
     text-align: right;
     font-size: 90%;
+}
+[dir=rtl] dl.wpsnip dd .wplicense {
+    text-align: left;
 }
