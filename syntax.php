@@ -98,6 +98,8 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
 
         // all relative links should point to wikipedia
         $text = str_replace('href="/', 'href="'.$wpUrl , $text);
+        // make protocol relative URLs use http
+        $text = str_replace('src="//', 'src="http://' , $text);
 
         require_once('simplehtmldom/simple_html_dom.php');
         $html = new simple_html_dom();
