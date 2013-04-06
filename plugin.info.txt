@@ -1,8 +1,8 @@
 base     wikipediasnippet
 author   Anika Henke
 email    anika@selfthinker.org
-date     2012-08-19
+date     2013-04-06
 name     WikipediaSnippet Plugin
 desc     Includes a snippet from a Wikipedia article.
 url      http://www.dokuwiki.org/plugin:wikipediasnippet
-#syntax  {{wp>ArticleName}}
+#syntax  {{wp>ArticleName}} or {{wp:lang>ArticleName}}
