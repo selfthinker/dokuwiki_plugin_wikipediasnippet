@@ -71,7 +71,12 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
      *   and create its container
      */
     function _getWPcontent($article, $articleLang, $wpUrl) {
-        $url = $wpUrl.'w/api.php?action=parse&redirects=&prop=text|displaytitle|revid&format=xml&page='.rawurlencode($article);
+        // config options
+        $snippetLength = ($this->getConf('snippetLength')) ? '&exsentences='.$this->getConf('snippetLength') : '&exintro=';
+        $useHtml = ($this->getConf('useHtml')) ? '' : '&explaintext=';
+        $page = '&titles='.rawurlencode($article);
+
+        $url = $wpUrl.'w/api.php?action=query&prop=extracts&format=xml'.$snippetLength.$useHtml.$page;
 
         // fetch article data from Wikipedia
         $http = new DokuHTTPClient();
@@ -95,9 +100,8 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
             libxml_clear_errors();
             return false;
         }
-        $title = $xml->parse['displaytitle'];
-        $revision = $xml->parse['revid'];
-        $text = $xml->parse->text;
+        $title = $xml->query->pages->page['title'];
+        $text = $xml->query->pages->page->extract;
         if (!$text) {
             msg('Error: Parsing the XML failed.', -1);
             $error = $xml->error;
@@ -107,58 +111,23 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
             return false;
         }
 
+        // @todo: extracts don't seem to have any links or images; when verified, remove:
         // all relative links should point to wikipedia
         $text = str_replace('href="/', 'href="'.$wpUrl , $text);
         // make protocol relative URLs use http
         $text = str_replace('src="//', 'src="http://' , $text);
-
-        require_once('simplehtmldom/simple_html_dom.php');
-        $html = new simple_html_dom();
-        $html->load($text);
-
-        // get only the first paragraphs by deleting everything after the TOC and/or the first headline
-        $htmlFromToc = $html->find('#toc',0);
-        while($htmlFromToc && $htmlFromToc->nextSibling()) {
-            $htmlFromToc->outertext = "";
-            $htmlFromToc = $htmlFromToc->nextSibling();
-        }
-        $htmlFromH2 = $html->find('h2',0);
-        if ($htmlFromH2 && $htmlFromH2->parentNode()->id == 'toctitle') {
-            $htmlFromH2 = $html->find('h2',1);
-        }
-        while($htmlFromH2 && $htmlFromH2->nextSibling()) {
-            $htmlFromH2->outertext = "";
-            $htmlFromH2 = $htmlFromH2->nextSibling();
+        if (!$this->getConf('useHtml')) {
+            $text = '<p>'.$text.'</p>';
         }
 
-        // cache all external images
-        $images = $html->find('img');
-        foreach ($images as $img) {
-            $imgSrc = $img->src;
-            $img->src = ml($imgSrc);
-        }
-
-        // remove all undesired elements
-        $remTables = (!$this->getConf('includeTables')) ? ', table' : '';
-        $remImages = (!$this->getConf('includeImages')) ? ', a.image, div.thumb' : '';
-        $remove = $html->find('script, .noprint, .editsection, .dablink, sup.reference'.$remTables.$remImages);
-        foreach ($remove as $rem) {
-            $rem->outertext = "";
-        }
-
-        $text = $html;
-
-        $permalink = $wpUrl.'w/index.php?title='.rawurlencode($article).'&amp;oldid='.$revision;
-        $normallink = $wpUrl.'wiki/'.rawurlencode($article);
-
+        $articleLink = $wpUrl.'wiki/'.rawurlencode($article);
         $langParams = $this->_getLangParams($articleLang);
 
         // display snippet and container
         $wpContent  = '<dl class="wpsnip">'.NL;
         $wpContent .= '  <dt>'.NL;
         $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wpUrl).'<span>: </span></em>';
-        $wpContent .=      '<cite><strong><a href="'.$normallink.'" class="interwiki iw_wp">'.$title.'</a></strong></cite> ';
-        $wpContent .=      '<sup><a href="'.$permalink.'" class="perm">'.$this->getLang('permalink').'</a></sup>'.NL;
+        $wpContent .=      '<cite><strong><a href="'.$articleLink.'" class="interwiki iw_wp">'.$title.'</a></strong></cite> ';
         $wpContent .= '  </dt>'.NL;
         $wpContent .= '  <dd><blockquote '.$langParams.'>'.$text.NL.'</blockquote>'.$this->_getWPlicense($wpUrl).'</dd>'.NL;
         $wpContent .= '</dl>'.NL;

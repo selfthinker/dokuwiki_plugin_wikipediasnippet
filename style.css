@@ -7,11 +7,6 @@ dl.wpsnip dt {
     font-size: 120%;
     padding: .2em .3em;
 }
-/* permalink */
-dl.wpsnip dt sup a.perm {
-    font-size: 80%;
-    font-weight: normal;
-}
 /* "snippet from wp" */
 dl.wpsnip dt em {
     font-size: 85%;

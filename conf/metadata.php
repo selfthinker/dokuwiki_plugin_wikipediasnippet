@@ -3,5 +3,5 @@
  * Configuration metadata for the WikipediaSnippet plugin
  */
 
-$meta['includeTables']    = array('onoff');
-$meta['includeImages']    = array('onoff');
+$meta['snippetLength'] = array('string');
+$meta['useHtml']       = array('onoff');

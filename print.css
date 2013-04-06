@@ -10,10 +10,6 @@ dl.wpsnip dt cite a.interwiki {
     padding-right: 0;
     background-image: none;
 }
-/* permalink */
-dl.wpsnip dt a.perm {
-    display: none;
-}
 
 /* __________ wp content __________ */
 
