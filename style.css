@@ -1,11 +1,15 @@
 
+dl.wpsnip {
+    background-color: __background_alt__;
+    border-radius: 5px;
+}
+
 /* __________ snippet header __________ */
 
 dl.wpsnip > dt {
-    border: solid __border__;
-    border-width: 1px 1px 3px;
+    border-bottom: 1px solid __border__;
     font-size: 120%;
-    padding: .2em .3em;
+    padding: .2em 1em;
 }
 /* "snippet from wp" */
 dl.wpsnip > dt em {
@@ -20,8 +24,7 @@ dl.wpsnip > dt em a {
 /* __________ wp content __________ */
 
 dl.wpsnip > dd {
-    background-color: __background_neu__;
-    padding: 1em .5em 0;
+    padding: .7em 1em 0;
     margin: 0;
 }
 
@@ -32,4 +35,5 @@ dl.wpsnip dl {
 /* license below the content */
 dl.wpsnip dd .wplicense {
     border-top: 1px solid __border__;
+    padding: .1em 0;
 }

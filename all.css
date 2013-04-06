@@ -7,7 +7,7 @@ dl.wpsnip {
 /* __________ snippet header __________ */
 
 dl.wpsnip > dt {
-    font-weight: bold;
+    font-weight: normal;
 }
 dl.wpsnip > dt cite {
     font-style: normal;
