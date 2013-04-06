@@ -3,5 +3,5 @@
  * Default settings for the WikipediaSnippet plugin
  */
 
-$conf['snippetLength'] = '';
+$conf['snippetLength'] = '0';
 $conf['useHtml']       = 1;

@@ -72,7 +72,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $useHtml = ($this->getConf('useHtml')) ? '' : '&explaintext=';
         $page = '&titles='.rawurlencode($article);
 
-        $url = $wpUrl.'w/api.php?action=query&prop=extracts&format=xml'.$snippetLength.$useHtml.$page;
+        $url = $wpUrl.'w/api.php?action=query&prop=extracts&redirects=&format=xml'.$snippetLength.$useHtml.$page;
 
         // fetch article data from Wikipedia
         $http = new DokuHTTPClient();
