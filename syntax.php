@@ -21,34 +21,45 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
     function getSort() { return 192; }
 
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('{{wp>[^}]+}}',$mode,'plugin_wikipediasnippet');
+        $this->Lexer->addSpecialPattern('{{wp(?:\:[a-z-]+)?>[^}]+}}',$mode,'plugin_wikipediasnippet');
     }
 
     function handle($match, $state, $pos, & $handler) {
-            return trim(substr($match,5,-2));
+        $data = substr($match, 2, -2);
+        list($command, $article) = explode('>', $data);
+
+        // if no specific language was given (e.g. {{wp>Wiki}}), use configured language
+        if (strpos($command, ':') === false) {
+            global $conf;
+            $lang = $conf['lang'];
+
+            // correct some non-standard language codes
+            $langCorrectionsFile = dirname(__FILE__).'/conf/langCorrections.conf';
+            if (@file_exists($langCorrectionsFile)) {
+                $langCorrections = confToHash($langCorrectionsFile);
+                $lang = strtr($lang, $langCorrections);
+            }
+
+        // if different language was given (e.g. {{wp:fr>Wiki}}), use that
+        } else {
+            list($null, $lang) = explode(':', $command);
+        }
+
+        return trim($lang).'::'.trim($article);
     }
 
     function render($mode, &$renderer, $data) {
         if($mode == 'xhtml') {
             if ($data) {
-                global $conf;
-                $lang = $conf['lang'];
-
-                // correct some non-standard language codes
-                $langCorrectionsFile = dirname(__FILE__).'/conf/langCorrections.conf';
-                if (@file_exists($langCorrectionsFile)) {
-                    $langCorrections = confToHash($langCorrectionsFile);
-                    $lang = strtr($lang, $langCorrections);
-                }
-
+                list($lang, $article) = explode('::', $data);
                 $wpUrl = 'http://'.$lang.'.wikipedia.org/';
 
-                $wpContent = $this->_getWPcontent($data, $wpUrl);
+                $wpContent = $this->_getWPcontent($article, $lang, $wpUrl);
                 if ($wpContent) {
                     $renderer->doc .= $wpContent;
                 } else {
                     // if all fails, build interwiki link
-                    $renderer->doc .= '<a href="'.$wpUrl.'wiki/'.rawurlencode($data).'" class="interwiki iw_wp">'.hsc($data).'</a>';
+                    $renderer->doc .= '<a href="'.$wpUrl.'wiki/'.rawurlencode($article).'" class="interwiki iw_wp">'.hsc($article).'</a>';
                 }
             }
             // if no parameter was given, just don't display anything
@@ -59,8 +70,8 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
      * Get the content of the article from Wikipedia, create a useful snippet
      *   and create its container
      */
-    function _getWPcontent($article, $wpUrl) {
-        $url = $wpUrl.'w/api.php?action=parse&redirects=1&prop=text|displaytitle|revid&format=xml&page='.rawurlencode($article);
+    function _getWPcontent($article, $articleLang, $wpUrl) {
+        $url = $wpUrl.'w/api.php?action=parse&redirects=&prop=text|displaytitle|revid&format=xml&page='.rawurlencode($article);
 
         // fetch article data from Wikipedia
         $http = new DokuHTTPClient();
@@ -140,6 +151,8 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $permalink = $wpUrl.'w/index.php?title='.rawurlencode($article).'&amp;oldid='.$revision;
         $normallink = $wpUrl.'wiki/'.rawurlencode($article);
 
+        $langParams = $this->_getLangParams($articleLang);
+
         // display snippet and container
         $wpContent  = '<dl class="wpsnip">'.NL;
         $wpContent .= '  <dt>'.NL;
@@ -147,7 +160,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $wpContent .=      '<cite><strong><a href="'.$normallink.'" class="interwiki iw_wp">'.$title.'</a></strong></cite> ';
         $wpContent .=      '<sup><a href="'.$permalink.'" class="perm">'.$this->getLang('permalink').'</a></sup>'.NL;
         $wpContent .= '  </dt>'.NL;
-        $wpContent .= '  <dd><blockquote>'.$text.NL.'</blockquote>'.$this->_getWPlicense($wpUrl).'</dd>'.NL;
+        $wpContent .= '  <dd><blockquote '.$langParams.'>'.$text.NL.'</blockquote>'.$this->_getWPlicense($wpUrl).'</dd>'.NL;
         $wpContent .= '</dl>'.NL;
 
         return $wpContent;
@@ -173,5 +186,34 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         return '<div class="wplicense"><a href="'.$url.'">'.$text.'</a></div>';
     }
 
+    /**
+     * Get lang and dir parameters to add if different from global lang and dir
+     */
+    function _getLangParams($articleLang) {
+        global $conf;
+        global $lang;
+
+        $diffLang = '';
+        $diffDir  = '';
+
+        if ($conf['lang'] != $articleLang) {
+            $diffLang = 'lang="'.$articleLang.'" xml:lang="'.$articleLang.'"';
+
+            // check lang dir
+            $lang2dirFile = dirname(__FILE__).'/conf/lang2dir.conf';
+            if (@file_exists($lang2dirFile)) {
+                $lang2dir = confToHash($lang2dirFile);
+                $dir = strtr($articleLang, $lang2dir);
+            }
+            // in case lang is not listed
+            if (!isset($dir) || ($dir == $articleLang)) {
+                $dir = $lang['direction'];
+            }
+
+            $diffDir = ($lang['direction'] != $dir) ? 'dir="'.$dir.'"' : '';
+        }
+
+        return $diffLang.' '.$diffDir;
+    }
 
 }//class
