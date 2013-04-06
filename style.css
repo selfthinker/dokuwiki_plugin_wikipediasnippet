@@ -1,34 +1,34 @@
 
 /* __________ snippet header __________ */
 
-dl.wpsnip dt {
+dl.wpsnip > dt {
     border: solid __border__;
     border-width: 1px 1px 3px;
     font-size: 120%;
     padding: .2em .3em;
 }
 /* "snippet from wp" */
-dl.wpsnip dt em {
+dl.wpsnip > dt em {
     font-size: 85%;
     font-style: normal;
     line-height: 1.8;
 }
-dl.wpsnip dt em a {
+dl.wpsnip > dt em a {
     font-weight: bold;
 }
 
 /* __________ wp content __________ */
 
-dl.wpsnip dd {
+dl.wpsnip > dd {
     background-color: __background_neu__;
     padding: 1em .5em 0;
     margin: 0;
 }
-/* tables */
-dl.wpsnip dd .infobox,
-dl.wpsnip dd .metadata {
-    border: 1px solid __border__;
+
+dl.wpsnip dl {
+    margin-bottom: 1.4em;
 }
+
 /* license below the content */
 dl.wpsnip dd .wplicense {
     border-top: 1px solid __border__;

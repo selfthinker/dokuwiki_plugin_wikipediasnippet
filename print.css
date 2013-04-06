@@ -1,11 +1,11 @@
 
 /* __________ snippet header __________ */
 
-dl.wpsnip dt {
+dl.wpsnip > dt {
     padding-bottom: .2em;
     border-bottom: 1px solid #000;
 }
-dl.wpsnip dt cite a.interwiki {
+dl.wpsnip > dt cite a.interwiki {
     padding-left: 0;
     padding-right: 0;
     background-image: none;
@@ -13,15 +13,11 @@ dl.wpsnip dt cite a.interwiki {
 
 /* __________ wp content __________ */
 
-dl.wpsnip dd {
+dl.wpsnip > dd {
     margin: 0;
 }
-/* tables */
-dl.wpsnip dd .infobox,
-dl.wpsnip dd .metadata {
-    border: 1px solid #000;
-}
+
 /* license below the content */
-dl.wpsnip dd .wplicense {
+dl.wpsnip > dd .wplicense {
     border-top: 1px solid #000;
 }

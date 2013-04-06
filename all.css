@@ -6,21 +6,21 @@ dl.wpsnip {
 
 /* __________ snippet header __________ */
 
-dl.wpsnip dt {
+dl.wpsnip > dt {
     font-weight: bold;
 }
-dl.wpsnip dt cite {
+dl.wpsnip > dt cite {
     font-style: normal;
 }
 /* "snippet from wp" */
-dl.wpsnip dt em {
+dl.wpsnip > dt em {
     font-weight: normal;
     float: right;
 }
-[dir=rtl] dl.wpsnip dt em {
+[dir=rtl] dl.wpsnip > dt em {
     float: left;
 }
-dl.wpsnip dt em span {
+dl.wpsnip > dt em span {
     position: absolute;
     left: -50000px;
     top: -50000px;
@@ -28,35 +28,18 @@ dl.wpsnip dt em span {
 
 /* __________ wp content __________ */
 
-dl.wpsnip dd blockquote {
+dl.wpsnip > dd blockquote {
     border: none;
     padding: 0;
     margin: 0;
 }
-/* tables */
-dl.wpsnip dd .infobox,
-dl.wpsnip dd .metadata {
-    float: right;
-    margin-left: 10px;
-}
-[dir=rtl] dl.wpsnip dd .infobox,
-[dir=rtl] dl.wpsnip dd .metadata {
-    float: left;
-    margin-left: 0;
-    margin-right: 10px;
-}
-/* top messages */
-dl.wpsnip dd .dablink {
-    font-style: italic;
-    font-size: 90%;
-    margin-bottom: 1em;
-}
+
 /* license below the content */
-dl.wpsnip dd .wplicense {
+dl.wpsnip > dd .wplicense {
     clear: both;
     text-align: right;
     font-size: 90%;
 }
-[dir=rtl] dl.wpsnip dd .wplicense {
+[dir=rtl] dl.wpsnip > dd .wplicense {
     text-align: left;
 }
