@@ -120,7 +120,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $langParams = $this->_getLangParams($articleLang);
 
         // display snippet and container
-        $wpContent  = '<dl class="wpsnip">'.NL;
+        $wpContent  = '<dl class="wpsnip" lang="'.$articleLang.'">'.NL;
         $wpContent .= '  <dt>'.NL;
         $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wpUrl).'<span>: </span></em>';
         $wpContent .=      '<cite><strong><a href="'.$articleLink.'" class="interwiki iw_wp">'.$title.'</a></strong></cite> ';
