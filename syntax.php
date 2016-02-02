@@ -44,7 +44,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         return trim($lang).'::'.trim($article);
     }
 
-    function render($mode, &$renderer, $data) {
+    function render($mode, Doku_Renderer $renderer, $data) {
         if($mode == 'xhtml') {
             if ($data) {
                 list($lang, $article) = explode('::', $data);
