@@ -20,7 +20,7 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $this->Lexer->addSpecialPattern('{{wp(?:\:[a-z-]+)?>[^}]+}}',$mode,'plugin_wikipediasnippet');
     }
 
-    function handle($match, $state, $pos, & $handler) {
+    function handle($match, $state, $pos, Doku_Handler $handler) {
         $data = substr($match, 2, -2);
         list($command, $article) = explode('>', $data);
 
