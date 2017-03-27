@@ -2,6 +2,8 @@
 dl.wpsnip {
     background-color: __background_alt__;
     border-radius: 5px;
+    /* prevent plugin to interfere with expanded ToC when there's one */
+    overflow: hidden;
 }
 
 /* __________ snippet header __________ */
