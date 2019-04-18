@@ -40,17 +40,25 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         } else {
             list($null, $lang) = explode(':', $command);
         }
-
-        return trim($lang).'::'.trim($article);
+		
+		// check for captor selection
+		$captor = '0';
+		if(strpos($article, '#') != false) { // captor selected
+			list($article, $captor) = explode('#', $article);
+			if($captor == "") 
+				$captor = '0';
+		}
+		
+        return  trim($lang).'::'.trim($article).'::'.trim($captor);
     }
 
     function render($mode, Doku_Renderer $renderer, $data) {
         if($mode == 'xhtml') {
             if ($data) {
-                list($lang, $article) = explode('::', $data);
+                list($lang, $article, $captor) = explode('::', $data);
                 $wpUrl = 'http://'.$lang.'.wikipedia.org/';
 
-                $wpContent = $this->_getWPcontent($article, $lang, $wpUrl);
+                $wpContent = $this->_getWPcontent($article, $lang, $captor, $wpUrl);
                 if ($wpContent) {
                     $renderer->doc .= $wpContent;
                 } else {
@@ -66,10 +74,11 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
      * Get the content of the article from Wikipedia, create a useful snippet
      *   and create its container
      */
-    function _getWPcontent($article, $articleLang, $wpUrl) {
+    function _getWPcontent($article, $articleLang, $captor, $wpUrl) {
         // config options
         $snippetLength = ($this->getConf('snippetLength')) ? '&exsentences='.$this->getConf('snippetLength') : '&exintro=';
-        $useHtml = ($this->getConf('useHtml')) ? '' : '&explaintext=';
+		if($captor > 0) $snippetLength = ''; // read complete article to select one captor 
+		$useHtml = ($this->getConf('useHtml')) ? '' : '&explaintext=';
         $page = '&titles='.rawurlencode($article);
 
         $url = $wpUrl.'w/api.php?action=query&prop=extracts&redirects=&format=xml'.$snippetLength.$useHtml.$page;
@@ -107,6 +116,19 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
             return false;
         }
 
+		if($captor > 0) { // captor selected -> pars the text
+			$split_text = explode('<h2>', $text); // <h2> split the wp article into captors
+			if(count($split_text) > $captor) { // check captor available
+				$text = $split_text[$captor];  // select captor
+				if($this->getConf('snippetLength') != 0) // cut the length?
+					$text = substr($text,0,$this->getConf('snippetLength'));
+			}
+			else  { // captor not found
+				msg('Error: Captor not found.', -1);
+				$text = "";
+			}
+		}
+		
         // @todo: extracts don't seem to have any links or images; when verified, remove:
         // all relative links should point to wikipedia
         $text = str_replace('href="/', 'href="'.$wpUrl , $text);
@@ -119,10 +141,15 @@ class syntax_plugin_wikipediasnippet extends DokuWiki_Syntax_Plugin {
         $articleLink = $wpUrl.'wiki/'.rawurlencode($article);
         $langParams = $this->_getLangParams($articleLang);
 
+		// get date and format
+		$date = "";
+		if($this->getConf('dateFormat') != "")
+			$date = ', '.date($this->getConf('dateFormat'));
+			
         // display snippet and container
         $wpContent  = '<dl class="wpsnip">'.NL;
         $wpContent .= '  <dt>'.NL;
-        $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wpUrl).'<span>: </span></em>';
+        $wpContent .= '    <em>'.sprintf($this->getLang('from'), $wpUrl).$date.'<span>: </span></em>';
         $wpContent .=      '<cite><strong><a href="'.$articleLink.'" class="interwiki iw_wp">'.$title.'</a></strong></cite> ';
         $wpContent .= '  </dt>'.NL;
         $wpContent .= '  <dd><blockquote '.$langParams.'>'.$text.NL.'</blockquote>'.$this->_getWPlicense($wpUrl).'</dd>'.NL;
